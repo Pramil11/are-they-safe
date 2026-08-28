@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+input,
+textarea,
+button {
+  font-family: inherit;
+}
+
+
+input,
+textarea {
+  background: white;
+  color: #111827;
+}
+
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
+}
