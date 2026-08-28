@@ -3,10 +3,12 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="Are They Safe API"
 )
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,29 +38,20 @@ async def create_missing_person(
     phone: str = Form(""),
     location: str = Form(""),
     district: str = Form(""),
-    last_seen_date: str = Form(""),
+    last_seen_date: str = Form(None),
     description: str = Form(""),
     photo: UploadFile = File(None)
 
 ):
 
-
     photo_path = None
-
-
     if photo:
-
         photo_path = f"{UPLOAD_FOLDER}/{photo.filename}"
-
-
         with open(photo_path, "wb") as buffer:
             shutil.copyfileobj(
                 photo.file,
                 buffer
             )
-
-
-
     person = {
 
         "name": name,
@@ -66,7 +59,7 @@ async def create_missing_person(
         "phone": phone,
         "location": location,
         "district": district,
-        "last_seen_date": last_seen_date,
+        "last_seen_date": last_seen_date if last_seen_date else None,
         "description": description,
         "photo_url": photo_path
 

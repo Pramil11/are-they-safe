@@ -15,6 +15,7 @@ const [form,setForm]=useState({
 
 const [photo,setPhoto]=useState(null);
 const fileInputRef = useRef(null);
+const [message, setMessage] = useState("");
 
 function handleChange(e){
 
@@ -31,19 +32,23 @@ e.preventDefault();
 
 
 const formData = new FormData();
-
-
 formData.append("name", form.name);
-formData.append("age", Number(form.age));
 formData.append("phone", form.phone);
 formData.append("location", form.location);
 formData.append("district", form.district);
-formData.append("last_seen_date", form.last_seen_date);
 formData.append("description", form.description);
-if(photo){
-    formData.append("photo", photo);
+
+if (form.age) {
+    formData.append("age", form.age);
 }
 
+if (form.last_seen_date) {
+    formData.append("last_seen_date", form.last_seen_date);
+}
+
+if (photo) {
+    formData.append("photo", photo);
+}
 console.log([...formData.entries()]);
 
 const response = await fetch(
@@ -54,100 +59,106 @@ body:formData
 }
 );
 
+if (!response.ok) {
+  alert("Something went wrong while submitting the report.");
+  return;
+}
 
-const data = await response.json();
+setMessage("Missing person report submitted successfully.");
 
+setTimeout(() => {
+    setMessage("");
+}, 4000);
 
-alert(data.message);
+setForm({
+    name:"",
+    age:"",
+    phone:"",
+    location:"",
+    district:"",
+    last_seen_date:"",
+    description:""
+});
+
+setPhoto(null);
+if(fileInputRef.current){
+    fileInputRef.current.value="";
+}
 
 }
 
-
-
 return (
-
 <div style={styles.container}>
-
 <div style={styles.header}>
-
 <h1>
 Report Missing Person
 </h1>
-
-
 <button
 onClick={goHome}
 style={styles.closeButton}
 >
 ×
 </button>
-
-
 </div>
-
-
+{message && (
+    <div style={styles.successMessage}>
+        {message}
+    </div>
+)}
 <form 
 style={styles.form}
 onSubmit={submitForm}
 >
-
-
 <input
 style={styles.input}
 name="name"
+value={form.name}
 placeholder="Full Name"
 onChange={handleChange}
 />
-
-
 <input
 style={styles.input}
 name="age"
 type="number"
+value={form.age}
 placeholder="Age"
 onChange={handleChange}
 />
-
-
 <input
 style={styles.input}
 name="phone"
+value={form.phone}
 placeholder="Contact Phone Number"
 onChange={handleChange}
 />
-
-
 <input
 style={styles.input}
 name="location"
+value={form.location}
 placeholder="Last Known Location"
 onChange={handleChange}
 />
-
-
 <input
 style={styles.input}
 name="district"
+value={form.district}
 placeholder="District"
 onChange={handleChange}
 />
-
-
 <input
 style={styles.input}
 name="last_seen_date"
 type="date"
+value={form.last_seen_date}
 onChange={handleChange}
 />
-
-
 <textarea
 style={styles.textarea}
 name="description"
+value={form.description}
 placeholder="Description (clothing, identification marks, etc.)"
 onChange={handleChange}
 />
-
 <input
 ref={fileInputRef}
 type="file"
@@ -157,20 +168,14 @@ onChange={(e)=>setPhoto(e.target.files[0])}
 
 {
 photo && (
-
 <div>
-
 <p>
 Selected Image: {photo.name}
 </p>
-
-
 <button
 type="button"
 onClick={()=>{
-
 setPhoto(null);
-
 if(fileInputRef.current){
     fileInputRef.current.value="";
 }
@@ -179,30 +184,17 @@ if(fileInputRef.current){
 >
 Remove Image
 </button>
-
-
 </div>
-
 )
 }
-
 <button style={styles.button}>
 Submit Missing Report
 </button>
-
-
 </form>
-
 </div>
-
 )
-
 }
-
-
-
 const styles={
-
 container:{
 minHeight:"100vh",
 display:"flex",
@@ -282,7 +274,18 @@ closeButton:{
     display:"flex",
     alignItems:"center",
     justifyContent:"center"
-}
+},
+successMessage:{
+    width:"400px",
+    padding:"14px",
+    marginBottom:"20px",
+    background:"#dcfce7",
+    color:"#166534",
+    border:"1px solid #86efac",
+    borderRadius:"8px",
+    textAlign:"center",
+    fontWeight:"600"
+},
 
 }
 
