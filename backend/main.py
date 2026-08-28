@@ -68,17 +68,12 @@ async def create_missing_person(
         "missing_people"
     ).insert(person).execute()
     return {
-
         "message": "Missing person report submitted",
-
         "data": response.data
-
     }
 
 @app.get("/missing-person")
 def get_missing_people():
-
-
     response = supabase.table(
         "missing_people"
     ).select("*").execute()
