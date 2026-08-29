@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MissingPerson from "./pages/MissingPerson";
 import RescueReport from "./pages/RescueReport";
 
@@ -8,7 +8,7 @@ function App() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loadReports = useCallback(async () => {
+  async function loadReports() {
     try {
       const response = await fetch(
         "http://127.0.0.1:8000/all-reports"
@@ -22,14 +22,31 @@ function App() {
       setReports(data);
     } catch (error) {
       console.error("Error loading reports:", error);
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  }
 
   useEffect(() => {
-    loadReports();
-  }, [loadReports]);
+    async function initialLoad() {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/all-reports"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load reports");
+        }
+
+        const data = await response.json();
+        setReports(data);
+      } catch (error) {
+        console.error("Error loading reports:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    initialLoad();
+  }, []);
 
   if (page === "missing-form") {
     return (
