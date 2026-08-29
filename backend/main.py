@@ -3,6 +3,7 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
+import secrets
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
@@ -52,6 +53,8 @@ async def create_missing_person(
                 photo.file,
                 buffer
             )
+    manage_token = secrets.token_urlsafe(8)
+
     person = {
 
         "name": name,
@@ -61,7 +64,8 @@ async def create_missing_person(
         "district": district,
         "last_seen_date": last_seen_date if last_seen_date else None,
         "description": description,
-        "photo_url": photo_path
+        "photo_url": photo_path,
+        "manage_token": manage_token
 
     }
     response = supabase.table(
@@ -69,6 +73,7 @@ async def create_missing_person(
     ).insert(person).execute()
     return {
         "message": "Missing person report submitted",
+        "manage_token": manage_token,
         "data": response.data
     }
 
@@ -103,7 +108,7 @@ async def create_rescue_report(
                 photo.file,
                 buffer
             )
-
+    manage_token = secrets.token_urlsafe(8)
     report = {
         "source_type": source_type,
         "organization": organization,
@@ -124,6 +129,7 @@ async def create_rescue_report(
 
     return {
         "message": "Rescue information submitted",
+        "manage_token": manage_token,
         "data": response.data
     }
 

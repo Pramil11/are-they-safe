@@ -60,15 +60,19 @@ body:formData
 );
 
 if (!response.ok) {
-  alert("Something went wrong while submitting the report.");
+  setMessage("Something went wrong while submitting the report.");
   return;
 }
 
-setMessage("Missing person report submitted successfully.");
+const data = await response.json();
+
+setMessage(
+  `Missing person report submitted successfully. Your management code is: ${data.manage_token}`
+);
 
 setTimeout(() => {
-    setMessage("");
-}, 4000);
+  setMessage("");
+}, 10000);
 
 setForm({
     name:"",

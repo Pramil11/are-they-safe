@@ -60,14 +60,17 @@ function RescueReport({ goHome }) {
       if (!response.ok) {
         setMessage("Something went wrong while submitting the rescue report.");
         return;
-      }
+        }
 
-      setMessage("Rescue information submitted successfully.");
+        const data = await response.json();
 
-      setTimeout(() => {
+        setMessage(
+        `Rescue report submitted successfully. Your management code is: ${data.manage_token}`
+        );
+
+        setTimeout(() => {
         setMessage("");
-      }, 4000);
-
+        }, 10000);
       setForm({
         source_type: "",
         organization: "",
