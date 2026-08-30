@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import MissingPerson from "./pages/MissingPerson";
 import RescueReport from "./pages/RescueReport";
+import ManageReport from "./pages/ManageReport";
 
 function App() {
   const [page, setPage] = useState("dashboard");
@@ -72,6 +73,17 @@ function App() {
     );
   }
 
+  if (page === "manage") {
+  return (
+    <ManageReport
+      goHome={() => {
+        setPage("dashboard");
+        loadReports();
+      }}
+      refreshReports={loadReports}
+    />
+  );
+}
   const missingReports = reports.filter(
     (report) => report.status?.toLowerCase() === "missing"
   );
@@ -120,6 +132,12 @@ function App() {
             onClick={() => setPage("rescue-form")}
           >
             + Report Rescued Person
+          </button>
+          <button
+            style={styles.manageButton}
+            onClick={() => setPage("manage")}
+          >
+            Manage My Report
           </button>
         </div>
       </header>
@@ -294,6 +312,17 @@ const styles = {
     fontSize: "15px",
     fontWeight: "600"
   },
+
+  manageButton: {
+  padding: "12px 18px",
+  border: "none",
+  borderRadius: "8px",
+  background: "#475569",
+  color: "white",
+  cursor: "pointer",
+  fontSize: "15px",
+  fontWeight: "600"
+},
 
   tabs: {
     background: "white",

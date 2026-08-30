@@ -246,3 +246,207 @@ def get_all_reports():
                 report.get("contact","N/A")
         })
     return results
+
+@app.get("/manage/missing/{token}")
+def get_missing_report_by_token(token: str):
+    response = (
+        supabase
+        .table("missing_people")
+        .select("*")
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    if not response.data:
+        return {
+            "success": False,
+            "message": "Report not found"
+        }
+
+    return {
+        "success": True,
+        "data": response.data[0]
+    }
+
+
+@app.put("/manage/missing/{token}")
+async def update_missing_report(
+    token: str,
+    name: str = Form(""),
+    age: int = Form(None),
+    phone: str = Form(""),
+    location: str = Form(""),
+    district: str = Form(""),
+    last_seen_date: str = Form(None),
+    description: str = Form("")
+):
+    existing = (
+        supabase
+        .table("missing_people")
+        .select("*")
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    if not existing.data:
+        return {
+            "success": False,
+            "message": "Invalid management code"
+        }
+
+    update_data = {
+        "name": name,
+        "age": age,
+        "phone": phone,
+        "location": location,
+        "district": district,
+        "last_seen_date": last_seen_date if last_seen_date else None,
+        "description": description
+    }
+
+    response = (
+        supabase
+        .table("missing_people")
+        .update(update_data)
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    return {
+        "success": True,
+        "message": "Missing person report updated",
+        "data": response.data
+    }
+
+
+@app.delete("/manage/missing/{token}")
+def delete_missing_report(token: str):
+    existing = (
+        supabase
+        .table("missing_people")
+        .select("*")
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    if not existing.data:
+        return {
+            "success": False,
+            "message": "Invalid management code"
+        }
+
+    supabase \
+        .table("missing_people") \
+        .delete() \
+        .eq("manage_token", token) \
+        .execute()
+
+    return {
+        "success": True,
+        "message": "Missing person report deleted"
+    }
+
+@app.get("/manage/rescue/{token}")
+def get_rescue_report_by_token(token: str):
+    response = (
+        supabase
+        .table("rescue_reports")
+        .select("*")
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    if not response.data:
+        return {
+            "success": False,
+            "message": "Report not found"
+        }
+
+    return {
+        "success": True,
+        "data": response.data[0]
+    }
+
+
+@app.put("/manage/rescue/{token}")
+async def update_rescue_report(
+    token: str,
+    source_type: str = Form(""),
+    organization: str = Form(""),
+    person_name: str = Form(""),
+    age: int = Form(None),
+    location: str = Form(""),
+    district: str = Form(""),
+    status: str = Form(""),
+    contact: str = Form(""),
+    post_url: str = Form(""),
+    description: str = Form("")
+):
+    existing = (
+        supabase
+        .table("rescue_reports")
+        .select("*")
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    if not existing.data:
+        return {
+            "success": False,
+            "message": "Invalid management code"
+        }
+
+    update_data = {
+        "source_type": source_type,
+        "organization": organization,
+        "person_name": person_name,
+        "age": age,
+        "location": location,
+        "district": district,
+        "status": status,
+        "contact": contact,
+        "post_url": post_url,
+        "description": description
+    }
+
+    response = (
+        supabase
+        .table("rescue_reports")
+        .update(update_data)
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    return {
+        "success": True,
+        "message": "Rescue report updated",
+        "data": response.data
+    }
+
+
+@app.delete("/manage/rescue/{token}")
+def delete_rescue_report(token: str):
+    existing = (
+        supabase
+        .table("rescue_reports")
+        .select("*")
+        .eq("manage_token", token)
+        .execute()
+    )
+
+    if not existing.data:
+        return {
+            "success": False,
+            "message": "Invalid management code"
+        }
+
+    supabase \
+        .table("rescue_reports") \
+        .delete() \
+        .eq("manage_token", token) \
+        .execute()
+
+    return {
+        "success": True,
+        "message": "Rescue report deleted"
+    }
