@@ -133,6 +133,34 @@ function ManageReport({ goHome, refreshReports }) {
     }
   }
 
+  async function markAsFound(){
+
+const response = await fetch(
+`http://127.0.0.1:8000/manage/missing/${token}/found`,
+{
+method:"PUT"
+}
+);
+
+
+const data = await response.json();
+
+
+if(data.success){
+  setMessage("Person marked as found successfully");
+
+  setReport({
+    ...report,
+    status:"Found"
+  });
+  if (refreshReports) {
+    refreshReports();
+  }
+} else {
+  setMessage("Unable to update report.");
+}
+}
+
   return (
     <div style={styles.container}>
       <div style={styles.header}>
@@ -345,6 +373,18 @@ function ManageReport({ goHome, refreshReports }) {
           >
             Delete Report
           </button>
+
+          {
+            type === "missing" && (
+                <button
+                type="button"
+                style={styles.foundButton}
+                onClick={markAsFound}
+                >
+                Mark as Found
+                </button>
+            )
+          }
         </form>
       )}
 
@@ -528,9 +568,16 @@ confirmDeleteButton: {
   border: "none",
   borderRadius: "8px",
   cursor: "pointer"
-}
+},
+foundButton: {
+  padding: "14px",
+  background: "#16a34a",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontSize: "16px"
+},
 };
-
-
 
 export default ManageReport;

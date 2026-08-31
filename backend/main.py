@@ -65,7 +65,8 @@ async def create_missing_person(
         "last_seen_date": last_seen_date if last_seen_date else None,
         "description": description,
         "photo_url": photo_path,
-        "manage_token": manage_token
+        "manage_token": manage_token,
+        "status": "Missing"
 
     }
     response = supabase.table(
@@ -220,8 +221,7 @@ def get_all_reports():
                 person.get("description","N/A"),
             "photo_url":
                 person.get("photo_url","N/A"),
-            "status":
-                "Missing",
+            "status":person.get("status","Missing"),
             "phone":
                 person.get("phone","N/A")
         })
@@ -449,4 +449,57 @@ def delete_rescue_report(token: str):
     return {
         "success": True,
         "message": "Rescue report deleted"
+    }
+
+@app.put("/manage/missing/{token}/found")
+def mark_missing_found(token:str):
+
+    report = supabase.table(
+        "missing_people"
+    ).select("*").eq(
+        "manage_token",
+        token
+    ).execute()
+
+    if not report.data:
+        return {
+            "success":False,
+            "message":"Invalid token"
+        }
+
+    person = report.data[0]
+
+    rescue_report = {
+        "source_type": "Recovered Missing Person",
+        "organization": "",
+        "person_name": person.get("name"),
+        "age": person.get("age"),
+        "location": person.get("location"),
+        "district": person.get("district"),
+        "status": "Found",
+        "contact": person.get("phone"),
+        "post_url": "",
+        "description": person.get("description"),
+        "photo_url": person.get("photo_url"),
+        "manage_token": token
+    }
+
+    supabase.table(
+        "rescue_reports"
+    ).insert(
+        rescue_report
+    ).execute()
+
+
+    supabase.table(
+        "missing_people"
+    ).delete().eq(
+        "manage_token",
+        token
+    ).execute()
+
+
+    return {
+        "success":True,
+        "message":"Person moved to found records"
     }
