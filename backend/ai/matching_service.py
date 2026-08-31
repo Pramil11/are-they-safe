@@ -1,6 +1,6 @@
 from ai.embeddings import create_embedding
 from ai.matcher import calculate_similarity
-
+from ai.scoring import calculate_final_score
 
 def build_person_text(person, is_missing=True):
 
@@ -44,9 +44,16 @@ def find_matches(missing_people, rescue_reports):
                 rescue_text
             )
 
-            score = calculate_similarity(
+            text_score = calculate_similarity(
                 missing_embedding,
                 rescue_embedding
+            )
+
+
+            score = calculate_final_score(
+                text_score,
+                missing,
+                rescue
             )
 
 
