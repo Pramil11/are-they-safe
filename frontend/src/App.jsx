@@ -3,6 +3,7 @@ import MissingPerson from "./pages/MissingPerson";
 import RescueReport from "./pages/RescueReport";
 import ManageReport from "./pages/ManageReport";
 import ReportDetails from "./pages/ReportDetails";
+import AIMatches from "./pages/AIMatches";
 
 function App() {
   const [page, setPage] = useState("dashboard");
@@ -98,7 +99,23 @@ function App() {
       refreshReports={loadReports}
     />
   );
-}
+  }
+  if (page === "ai-matches") {
+
+  return (
+
+    <AIMatches
+
+      goHome={()=>{
+        setPage("dashboard");
+        loadReports();
+      }}
+
+    />
+
+  );
+  }
+
   const missingReports = reports.filter(
     (report) => report.status?.toLowerCase() === "missing"
   );
@@ -163,6 +180,12 @@ function App() {
             onClick={() => setPage("manage")}
           >
             Manage My Report
+          </button>
+          <button
+            style={styles.aiButton}
+            onClick={() => setPage("ai-matches")}
+          >
+            AI Match Search
           </button>
         </div>
       </header>
@@ -505,6 +528,16 @@ searchInput: {
   border: "1px solid #cbd5e1",
   borderRadius: "8px",
   background: "white"
+},
+aiButton:{
+  padding:"12px 18px",
+  border:"none",
+  borderRadius:"8px",
+  background:"#7c3aed",
+  color:"white",
+  cursor:"pointer",
+  fontSize:"15px",
+  fontWeight:"600"
 },
 };
 
