@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import MissingPerson from "./pages/MissingPerson";
 import RescueReport from "./pages/RescueReport";
 import ManageReport from "./pages/ManageReport";
+import ReportDetails from "./pages/ReportDetails";
 
 function App() {
   const [page, setPage] = useState("dashboard");
@@ -9,6 +10,7 @@ function App() {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [selectedReport, setSelectedReport] = useState(null);
 
   async function loadReports() {
     try {
@@ -49,6 +51,18 @@ function App() {
 
     initialLoad();
   }, []);
+
+  if (page === "details") {
+    return (
+      <ReportDetails
+        report={selectedReport}
+        goBack={() => {
+          setSelectedReport(null);
+          setPage("dashboard");
+        }}
+      />
+    );
+  }
 
   if (page === "missing-form") {
     return (
@@ -219,7 +233,14 @@ function App() {
         ) : (
           <div style={styles.grid}>
             {visibleReports.map((person, index) => (
-              <div style={styles.card} key={person.id || index}>
+              <div
+                style={styles.card}
+                key={person.id || index}
+                onClick={() => {
+                  setSelectedReport(person);
+                  setPage("details");
+                }}
+              >
                 {person.photo_url ? (
                   <img
                     src={`http://127.0.0.1:8000/${person.photo_url}`}
@@ -408,7 +429,8 @@ const styles = {
     background: "white",
     borderRadius: "12px",
     overflow: "hidden",
-    border: "1px solid #e2e8f0"
+    border: "1px solid #e2e8f0",
+    cursor: "pointer"
   },
 
   image: {
