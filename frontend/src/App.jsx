@@ -8,6 +8,7 @@ function App() {
   const [activeTab, setActiveTab] = useState("missing");
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   async function loadReports() {
     try {
@@ -92,10 +93,20 @@ function App() {
     (report) => report.status?.toLowerCase() !== "missing"
   );
 
-  const visibleReports =
+  const currentReports =
     activeTab === "missing"
       ? missingReports
       : rescuedReports;
+  
+  const visibleReports = currentReports.filter((report) => {
+    const searchText = search.toLowerCase();
+
+    const matchesSearch =
+      (report.name || "").toLowerCase().includes(searchText) ||
+      (report.location || "").toLowerCase().includes(searchText);
+
+    return matchesSearch;
+  });
 
   function displayValue(value) {
     if (
@@ -150,7 +161,10 @@ function App() {
               ? styles.activeMissingTab
               : {})
           }}
-          onClick={() => setActiveTab("missing")}
+          onClick={() => {
+            setActiveTab("missing");
+            setSearch("");
+          }}
         >
           Missing Persons ({missingReports.length})
         </button>
@@ -162,7 +176,10 @@ function App() {
               ? styles.activeRescueTab
               : {})
           }}
-          onClick={() => setActiveTab("rescued")}
+          onClick={() => {
+            setActiveTab("rescued");
+            setSearch("");
+          }}
         >
           Rescued / Found ({rescuedReports.length})
         </button>
@@ -181,6 +198,16 @@ function App() {
               ? "People currently reported missing."
               : "People reported rescued, found, or safe."}
           </p>
+        </div>
+
+        <div style={styles.searchArea}>
+          <input
+            style={styles.searchInput}
+            type="text"
+            value={search}
+            placeholder="Search by name or last known location..."
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
 
         {loading ? (
@@ -440,7 +467,23 @@ const styles = {
     textAlign: "center",
     borderRadius: "10px",
     color: "#64748b"
-  }
+  },
+  searchArea: {
+  display: "flex",
+  gap: "12px",
+  marginBottom: "25px",
+  flexWrap: "wrap"
+},
+
+searchInput: {
+  flex: "1",
+  minWidth: "260px",
+  padding: "13px 15px",
+  fontSize: "16px",
+  border: "1px solid #cbd5e1",
+  borderRadius: "8px",
+  background: "white"
+},
 };
 
 export default App;
