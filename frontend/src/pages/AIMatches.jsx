@@ -37,10 +37,15 @@ function AIMatches({ goHome }) {
 
   useEffect(() => {
 
-    loadMatches();
+  async function fetchMatches(){
 
-  }, []);
+    await loadMatches();
 
+  }
+
+  fetchMatches();
+
+}, []);
 
   return (
 
