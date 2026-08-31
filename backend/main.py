@@ -5,6 +5,7 @@ import shutil
 import os
 import secrets
 from fastapi.staticfiles import StaticFiles
+from ai.matching_service import find_matches
 
 app = FastAPI(
     title="Are They Safe API"
@@ -142,7 +143,7 @@ def get_rescue_reports():
     return response.data
 
 @app.get("/match")
-def find_matches():
+def manual_matches():
     matches = []
     missing = supabase.table(
         "missing_people"
@@ -503,3 +504,24 @@ def mark_missing_found(token:str):
         "success":True,
         "message":"Person moved to found records"
     }
+
+@app.get("/ai/matches")
+def ai_matches():
+
+    missing = supabase.table(
+        "missing_people"
+    ).select("*").execute().data
+
+
+    rescue = supabase.table(
+        "rescue_reports"
+    ).select("*").execute().data
+
+
+    results = find_matches(
+        missing,
+        rescue
+    )
+
+
+    return results
