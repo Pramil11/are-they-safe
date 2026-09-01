@@ -92,14 +92,12 @@ function AIMatches({ goHome }) {
               Possible Match Found
             </h2>
 
-
             <p>
               <strong>
                 Missing Person:
               </strong>{" "}
               {match.missing_name}
             </p>
-
 
             <p>
               <strong>
@@ -108,14 +106,12 @@ function AIMatches({ goHome }) {
               {match.found_name}
             </p>
 
-
             <p>
               <strong>
                 AI Confidence:
               </strong>{" "}
               {match.final_score}%
             </p>
-
 
             <span style={styles.badge}>
               {match.status}
