@@ -74,20 +74,13 @@ function AIMatches({ goHome }) {
         <p>
           AI is searching for possible matches...
         </p>
-
-
         :
-
         matches.length === 0 ?
 
         <div style={styles.empty}>
           No possible matches found.
         </div>
-
-
         :
-
-
         matches.map((match,index)=>(
 
           <div
@@ -120,7 +113,7 @@ function AIMatches({ goHome }) {
               <strong>
                 AI Confidence:
               </strong>{" "}
-              {match.confidence}%
+              {match.final_score}%
             </p>
 
 
