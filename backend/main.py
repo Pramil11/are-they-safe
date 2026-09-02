@@ -522,8 +522,6 @@ def ai_matches():
         missing,
         rescue
     )
-
-
     return results
 
 @app.get("/ai/match/{missing_id}/{rescue_id}")
