@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 
-
-function AIMatches({ goHome }) {
+function AIMatches({ goHome, setPage, setSelectedMatch }) {
 
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-
 
   async function loadMatches() {
 
@@ -47,6 +45,13 @@ function AIMatches({ goHome }) {
 
 }, []);
 
+function reviewMatch(match){
+
+  setSelectedMatch(match);
+
+  setPage("match-review");
+
+}
   return (
 
     <div style={styles.container}>
@@ -116,22 +121,25 @@ function AIMatches({ goHome }) {
             <span style={styles.badge}>
               {match.status}
             </span>
-
-
+          <button
+            style={styles.reviewButton}
+            onClick={()=>{
+                setSelectedMatch(match);
+                setPage(reviewMatch(match));
+            }}
+            >
+            Review Match
+            </button>
           </div>
 
         ))
 
       }
-
-
     </div>
 
   );
 
 }
-
-
 const styles = {
 
 container:{
@@ -141,14 +149,12 @@ container:{
   color:"#1e293b"
 },
 
-
 header:{
   display:"flex",
   justifyContent:"space-between",
   alignItems:"center",
   marginBottom:"30px"
 },
-
 
 backButton:{
   padding:"12px 18px",
@@ -159,7 +165,6 @@ backButton:{
   cursor:"pointer"
 },
 
-
 card:{
   background:"white",
   padding:"25px",
@@ -168,7 +173,6 @@ card:{
   maxWidth:"600px",
   border:"1px solid #e2e8f0"
 },
-
 
 badge:{
   display:"inline-block",
@@ -186,7 +190,18 @@ empty:{
   padding:"40px",
   borderRadius:"10px",
   textAlign:"center"
-}
+},
+
+reviewButton:{
+  marginTop:"20px",
+  padding:"12px 18px",
+  background:"#2563eb",
+  color:"white",
+  border:"none",
+  borderRadius:"8px",
+  cursor:"pointer",
+  fontWeight:"600"
+},
 
 
 };

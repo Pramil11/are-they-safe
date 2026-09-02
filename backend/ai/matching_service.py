@@ -25,6 +25,9 @@ def find_matches(
 
             if result["final_score"] >= MATCH_THRESHOLD:
 
+                result["missing_id"] = missing.get("id")
+                result["rescue_id"] = rescue.get("id")
+
                 matches.append(result)
 
 

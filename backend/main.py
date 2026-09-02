@@ -525,3 +525,33 @@ def ai_matches():
 
 
     return results
+
+@app.get("/ai/match/{missing_id}/{rescue_id}")
+def get_match_details(
+    missing_id:str,
+    rescue_id:str
+):
+
+    missing = supabase.table(
+        "missing_people"
+    ).select("*").eq(
+        "id",
+        missing_id
+    ).single().execute()
+
+
+    rescue = supabase.table(
+        "rescue_reports"
+    ).select("*").eq(
+        "id",
+        rescue_id
+    ).single().execute()
+
+
+    return {
+
+        "missing": missing.data,
+
+        "rescue": rescue.data
+
+    }

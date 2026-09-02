@@ -4,6 +4,7 @@ import RescueReport from "./pages/RescueReport";
 import ManageReport from "./pages/ManageReport";
 import ReportDetails from "./pages/ReportDetails";
 import AIMatches from "./pages/AIMatches";
+import MatchReview from "./pages/MatchReview";
 
 function App() {
   const [page, setPage] = useState("dashboard");
@@ -12,6 +13,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedReport, setSelectedReport] = useState(null);
+  const [selectedMatch, setSelectedMatch] = useState(null);
 
   async function loadReports() {
     try {
@@ -110,10 +112,23 @@ function App() {
         setPage("dashboard");
         loadReports();
       }}
+      setPage={setPage}
+      setSelectedMatch={setSelectedMatch}
 
     />
 
   );
+  }
+  if (page === "match-review") {
+
+    return (
+      <MatchReview
+        match={selectedMatch}
+        goBack={()=>{
+          setPage("ai-matches");
+        }}
+      />
+    );
   }
 
   const missingReports = reports.filter(
