@@ -124,7 +124,6 @@ function reviewMatch(match){
           <button
             style={styles.reviewButton}
             onClick={()=>{
-                setSelectedMatch(match);
                 setPage(reviewMatch(match));
             }}
             >

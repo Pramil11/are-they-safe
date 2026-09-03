@@ -6,7 +6,8 @@ import os
 import secrets
 from fastapi.staticfiles import StaticFiles
 from ai.matching_service import find_matches
-
+from fastapi import HTTPException
+from ai.combined_matcher import calculate_match
 app = FastAPI(
     title="Are They Safe API"
 )
@@ -210,6 +211,7 @@ def get_all_reports():
 
     for person in missing:
         results.append({
+            "id": person.get("id"),
             "name":
                 person.get("name","N/A"),
             "age":
@@ -229,6 +231,7 @@ def get_all_reports():
 
     for report in rescue:
         results.append({
+            "id": report.get("id"),
             "name":
                 report.get("person_name","N/A"),
             "age":
@@ -524,11 +527,8 @@ def ai_matches():
     )
     return results
 
-@app.get("/ai/match/{missing_id}/{rescue_id}")
-def get_match_details(
-    missing_id:str,
-    rescue_id:str
-):
+@app.get("/ai/matches/missing/{missing_id}")
+def find_missing_matches(missing_id:str):
 
     missing = supabase.table(
         "missing_people"
@@ -536,8 +536,33 @@ def get_match_details(
         "id",
         missing_id
     ).single().execute()
+    rescues = supabase.table(
+        "rescue_reports"
+    ).select("*").execute()
+    matches = []
+    for rescue in rescues.data:
+        result = calculate_match(
+            missing.data,
+            rescue
+        )
+        if result["final_score"] >= 80:
 
+            matches.append({
 
+                "person": rescue,
+                "score": result["final_score"],
+                "text_score": result["text_score"],
+                "image_score": result["image_score"]
+
+            })
+    matches.sort(
+        key=lambda x:x["score"],
+        reverse=True
+    )
+    return matches
+
+@app.get("/ai/matches/rescue/{rescue_id}")
+def find_rescue_matches(rescue_id:str):
     rescue = supabase.table(
         "rescue_reports"
     ).select("*").eq(
@@ -545,11 +570,95 @@ def get_match_details(
         rescue_id
     ).single().execute()
 
+    missing_people = supabase.table(
+        "missing_people"
+    ).select("*").execute()
 
-    return {
+    matches=[]
+    for missing in missing_people.data:
+        result = calculate_match(
+            missing,
+            rescue.data
+        )
+        if result["final_score"] >= 80:
+            matches.append({
+                "person": missing,
+                "score": result["final_score"],
+                "text_score": result["text_score"],
+                "image_score": result["image_score"]
 
-        "missing": missing.data,
+            })
+    matches.sort(
+        key=lambda x:x["score"],
+        reverse=True
+    )
+    return matches
 
-        "rescue": rescue.data
+@app.get("/ai/person-matches/{person_type}/{person_id}")
+def person_matches(person_type:str, person_id:str):
 
-    }
+    matches=[]
+
+    if person_type=="missing":
+
+        person = supabase.table(
+            "missing_people"
+        ).select("*").eq(
+            "id",
+            person_id
+        ).single().execute().data
+
+
+        rescues=supabase.table(
+            "rescue_reports"
+        ).select("*").execute().data
+
+
+        for rescue in rescues:
+
+            result=calculate_match(
+                person,
+                rescue
+            )
+
+            if result["final_score"]>=80:
+
+                matches.append({
+                    "person1":person,
+                    "person2":rescue,
+                    **result
+                })
+
+
+    elif person_type=="rescue":
+
+        person=supabase.table(
+            "rescue_reports"
+        ).select("*").eq(
+            "id",
+            person_id
+        ).single().execute().data
+
+
+        missing=supabase.table(
+            "missing_people"
+        ).select("*").execute().data
+
+
+        for m in missing:
+
+            result=calculate_match(
+                m,
+                person
+            )
+
+            if result["final_score"]>=80:
+
+                matches.append({
+                    "person1":m,
+                    "person2":person,
+                    **result
+                })
+
+
+    return matches

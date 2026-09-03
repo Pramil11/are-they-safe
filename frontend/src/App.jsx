@@ -3,8 +3,7 @@ import MissingPerson from "./pages/MissingPerson";
 import RescueReport from "./pages/RescueReport";
 import ManageReport from "./pages/ManageReport";
 import ReportDetails from "./pages/ReportDetails";
-import AIMatches from "./pages/AIMatches";
-import MatchReview from "./pages/MatchReview";
+import PersonAIMatches from "./pages/PersonAIMatches";
 
 function App() {
   const [page, setPage] = useState("dashboard");
@@ -13,7 +12,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedReport, setSelectedReport] = useState(null);
-  const [selectedMatch, setSelectedMatch] = useState(null);
+  const [selectedPerson,setSelectedPerson]=useState(null);
 
   async function loadReports() {
     try {
@@ -30,6 +29,14 @@ function App() {
     } catch (error) {
       console.error("Error loading reports:", error);
     }
+  }
+
+  function openAIMatches(person){
+
+  setSelectedPerson(person);
+
+  setPage("person-ai");
+
   }
 
   useEffect(() => {
@@ -56,16 +63,37 @@ function App() {
   }, []);
 
   if (page === "details") {
-    return (
-      <ReportDetails
-        report={selectedReport}
-        goBack={() => {
-          setSelectedReport(null);
-          setPage("dashboard");
-        }}
-      />
-    );
+
+  return (
+    <ReportDetails
+      report={selectedReport}
+      goBack={()=>{
+        setSelectedReport(null);
+        setPage("dashboard");
+      }}
+      openAIMatches={openAIMatches}
+    />
+  );
+
+}
+
+if (page === "person-ai") {
+
+  if (!selectedPerson) {
+    setPage("dashboard");
+    return null;
   }
+
+  return (
+    <PersonAIMatches
+      person={selectedPerson}
+      goBack={()=>{
+        setPage("details");
+      }}
+    />
+  );
+
+}
 
   if (page === "missing-form") {
     return (
@@ -101,34 +129,6 @@ function App() {
       refreshReports={loadReports}
     />
   );
-  }
-  if (page === "ai-matches") {
-
-  return (
-
-    <AIMatches
-
-      goHome={()=>{
-        setPage("dashboard");
-        loadReports();
-      }}
-      setPage={setPage}
-      setSelectedMatch={setSelectedMatch}
-
-    />
-
-  );
-  }
-  if (page === "match-review") {
-
-    return (
-      <MatchReview
-        match={selectedMatch}
-        goBack={()=>{
-          setPage("ai-matches");
-        }}
-      />
-    );
   }
 
   const missingReports = reports.filter(
@@ -195,12 +195,6 @@ function App() {
             onClick={() => setPage("manage")}
           >
             Manage My Report
-          </button>
-          <button
-            style={styles.aiButton}
-            onClick={() => setPage("ai-matches")}
-          >
-            AI Match Search
           </button>
         </div>
       </header>

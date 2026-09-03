@@ -1,4 +1,4 @@
-function ReportDetails({ report, goBack }) {
+function ReportDetails({ report, goBack, openAIMatches }) {
 
   function displayValue(value) {
     if (
@@ -81,6 +81,13 @@ function ReportDetails({ report, goBack }) {
             {displayValue(report.description)}
           </p>
 
+          <button
+            style={styles.aiButton}
+            onClick={() => openAIMatches(report)}
+          >
+            🤖 AI Find Matches
+          </button>
+
         </div>
 
       </div>
@@ -146,6 +153,18 @@ safe:{
   color:"#166534",
   padding:"6px 12px",
   borderRadius:"20px"
+},
+
+aiButton:{
+  marginTop:"20px",
+  padding:"12px 18px",
+  background:"#7c3aed",
+  color:"white",
+  border:"none",
+  borderRadius:"8px",
+  cursor:"pointer",
+  fontSize:"16px",
+  fontWeight:"600"
 }
 
 };
